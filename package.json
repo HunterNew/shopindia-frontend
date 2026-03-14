@@ -20,11 +20,11 @@
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0"
   },
-"scripts": {
-  "start": "npx vite",
-  "build": "npx vite build",
-  "preview": "npx vite preview"
-},
+  "scripts": {
+    "start": "node node_modules/vite/bin/vite.js",
+    "build": "node node_modules/vite/bin/vite.js build",
+    "preview": "node node_modules/vite/bin/vite.js preview"
+  },
   "browserslist": {
     "production": [">0.2%", "not dead"],
     "development": ["last 1 chrome version"]
