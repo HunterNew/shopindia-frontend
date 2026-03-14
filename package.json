@@ -16,10 +16,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build",
-    "vercel-build": "CI=false react-scripts build"
+    "build": "react-scripts build"
   },
-  "proxy": "http://localhost:5000",
   "browserslist": {
     "production": [">0.2%", "not dead"],
     "development": ["last 1 chrome version"]
