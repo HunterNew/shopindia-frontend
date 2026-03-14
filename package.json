@@ -15,11 +15,11 @@
     "react-icons": "^4.12.0",
     "react-scripts": "5.0.1"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "vercel-build": "CI= react-scripts build"
-  },
+ "scripts": {
+  "start": "react-scripts start",
+  "build": "CI=false react-scripts build",
+  "vercel-build": "CI=false react-scripts build"
+},
   "proxy": "http://localhost:5000",
   "browserslist": {
     "production": [">0.2%", "not dead"],
