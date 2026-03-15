@@ -1,6 +1,6 @@
 // ─── Categories.js ───────────────────────────────────────────────────────────
 import React, { useEffect, useState } from 'react';
-import { FiPlus, FiEdit2, FiTrash2, FiX, FiSave } from 'react-icons/fi';
+import { FiPlus, FiEdit2, FiX, FiSave } from 'react-icons/fi';
 import API from '../../utils/api';
 import toast from 'react-hot-toast';
 
@@ -28,7 +28,7 @@ export default function AdminCategories() {
     });
     setModal(cat);
   };
-  
+
   const save = async () => {
     if (!form.name.trim()) { toast.error('Name is required'); return; }
     setSaving(true);
@@ -46,11 +46,11 @@ export default function AdminCategories() {
     finally { setSaving(false); }
   };
 
-  const remove = async (id, name) => {
-    if (!window.confirm(`Remove category "${name}"?`)) return;
-    try { await API.delete(`/admin/categories/${id}`); toast.success('Removed'); load(); }
-    catch { toast.error('Failed'); }
-  };
+  // const remove = async (id, name) => {
+  //   if (!window.confirm(`Remove category "${name}"?`)) return;
+  //   try { await API.delete(`/admin/categories/${id}`); toast.success('Removed'); load(); }
+  //   catch { toast.error('Failed'); }
+  // };
 
   return (
     <div className="space-y-5">
@@ -88,7 +88,23 @@ export default function AdminCategories() {
                 <td className="px-5 py-3">
                   <div className="flex items-center justify-end gap-2">
                     <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
-                    <button onClick={() => remove(cat.id, cat.name)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"><FiTrash2 size={15} /></button>
+                    {/* <button onClick={() => remove(cat.id, cat.name)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"><FiTrash2 size={15} /></button> */}
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
+                      <button
+                        onClick={() => {
+                          API.put(`/admin/categories/${cat.id}`, { is_active: !cat.is_active })
+                            .then(() => { toast.success(cat.is_active ? 'Category hidden from store' : 'Category shown in store'); load(); })
+                            .catch(() => toast.error('Failed'));
+                        }}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${cat.is_active
+                            ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-600'
+                            : 'bg-red-100 text-red-600 hover:bg-green-100 hover:text-green-700'
+                          }`}
+                      >
+                        {cat.is_active ? 'Active' : 'Inactive'}
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
