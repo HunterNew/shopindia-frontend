@@ -6,10 +6,10 @@ import toast from 'react-hot-toast';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [modal,      setModal]      = useState(null); // null | 'new' | category object
-  const [form,       setForm]       = useState({ name: '', description: '' });
-  const [saving,     setSaving]     = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null); // null | 'new' | category object
+  const [form, setForm] = useState({ name: '', description: '' });
+  const [saving, setSaving] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -20,8 +20,15 @@ export default function AdminCategories() {
   useEffect(() => { load(); }, []);
 
   const openNew = () => { setForm({ name: '', description: '' }); setModal('new'); };
-  const openEdit = (cat) => { setForm({ name: cat.name, description: cat.description || '' }); setModal(cat); };
-
+  const openEdit = (cat) => {
+    setForm({
+      name: cat.name,
+      description: cat.description || '',
+      is_active: cat.is_active
+    });
+    setModal(cat);
+  };
+  
   const save = async () => {
     if (!form.name.trim()) { toast.error('Name is required'); return; }
     setSaving(true);
@@ -101,12 +108,31 @@ export default function AdminCategories() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">Name *</label>
-                <input value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} className="input-field" placeholder="Category name" autoFocus />
+                <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="input-field" placeholder="Category name" autoFocus />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1.5">Description</label>
-                <textarea value={form.description} onChange={e => setForm(f => ({...f, description: e.target.value}))} rows={3} className="input-field resize-none" placeholder="Short description" />
+                <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={3} className="input-field resize-none" placeholder="Short description" />
               </div>
+
+              {/* ── Active Toggle ── */}
+              {modal !== 'new' && (
+                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Active Status</p>
+                    <p className="text-xs text-gray-400">{form.is_active ? 'Visible in store' : 'Hidden from store'}</p>
+                  </div>
+                  <div
+                    onClick={() => setForm(f => ({ ...f, is_active: !f.is_active }))}
+                    className={`w-11 h-6 rounded-full cursor-pointer transition-colors ${form.is_active ? 'bg-orange-500' : 'bg-gray-300'
+                      }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full shadow mt-0.5 transition-transform ${form.is_active ? 'translate-x-5 ml-0.5' : 'translate-x-0 ml-0.5'
+                      }`} />
+                  </div>
+                </div>
+              )}
+
             </div>
             <div className="flex gap-3 mt-5">
               <button onClick={() => setModal(null)} className="flex-1 btn-outline">Cancel</button>
