@@ -86,10 +86,7 @@ export default function AdminCategories() {
                   </span>
                 </td>
                 <td className="px-5 py-3">
-                  <div className="flex items-center justify-end gap-2">
-                    <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
-                    {/* <button onClick={() => remove(cat.id, cat.name)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition"><FiTrash2 size={15} /></button> */}
-                    <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-2">
                       <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
                       <button
                         onClick={() => {
@@ -105,7 +102,6 @@ export default function AdminCategories() {
                         {cat.is_active ? 'Active' : 'Inactive'}
                       </button>
                     </div>
-                  </div>
                 </td>
               </tr>
             ))}
