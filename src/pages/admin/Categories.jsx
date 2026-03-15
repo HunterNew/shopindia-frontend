@@ -81,27 +81,41 @@ export default function AdminCategories() {
                 <td className="px-4 py-3 text-gray-500 hidden md:table-cell text-xs">{cat.description || '—'}</td>
                 <td className="px-4 py-3 text-gray-600">{cat.product_count}</td>
                 <td className="px-4 py-3">
-                  <span className={`badge ${cat.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                  {/* <span className={`badge ${cat.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                     {cat.is_active ? 'Active' : 'Hidden'}
-                  </span>
+                  </span> */}
+
+                  <button
+                    onClick={() => {
+                      API.put(`/admin/categories/${cat.id}`, { is_active: !cat.is_active })
+                        .then(() => { toast.success(cat.is_active ? 'Category hidden from store' : 'Category shown in store'); load(); })
+                        .catch(() => toast.error('Failed'));
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${cat.is_active
+                      ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-600'
+                      : 'bg-red-100 text-red-600 hover:bg-green-100 hover:text-green-700'
+                      }`}
+                  >
+                    {cat.is_active ? 'Active' : 'Inactive'}
+                  </button>
                 </td>
                 <td className="px-5 py-3">
-                <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
-                      <button
-                        onClick={() => {
-                          API.put(`/admin/categories/${cat.id}`, { is_active: !cat.is_active })
-                            .then(() => { toast.success(cat.is_active ? 'Category hidden from store' : 'Category shown in store'); load(); })
-                            .catch(() => toast.error('Failed'));
-                        }}
-                        className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${cat.is_active
-                            ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-600'
-                            : 'bg-red-100 text-red-600 hover:bg-green-100 hover:text-green-700'
-                          }`}
-                      >
-                        {cat.is_active ? 'Active' : 'Inactive'}
-                      </button>
-                    </div>
+                  <div className="flex items-center justify-end gap-2">
+                    <button onClick={() => openEdit(cat)} className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"><FiEdit2 size={15} /></button>
+                    {/* <button
+                      onClick={() => {
+                        API.put(`/admin/categories/${cat.id}`, { is_active: !cat.is_active })
+                          .then(() => { toast.success(cat.is_active ? 'Category hidden from store' : 'Category shown in store'); load(); })
+                          .catch(() => toast.error('Failed'));
+                      }}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${cat.is_active
+                        ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-600'
+                        : 'bg-red-100 text-red-600 hover:bg-green-100 hover:text-green-700'
+                        }`}
+                    >
+                      {cat.is_active ? 'Active' : 'Inactive'}
+                    </button> */}
+                  </div>
                 </td>
               </tr>
             ))}
