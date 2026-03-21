@@ -22,9 +22,9 @@ export default function CustomerLayout() {
       {/* ── Navbar ── */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         {/* Top bar */}
-        <div className="bg-orange-500 text-white text-xs text-center py-1">
+        {/* <div className="bg-orange-500 text-white text-xs text-center py-1">
           🎉 Free shipping on orders above ₹500 · Use code WELCOME10 for 10% off
-        </div>
+        </div> */}
 
         <div className="page-container">
           <div className="flex items-center h-16 gap-4">
