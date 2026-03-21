@@ -33,6 +33,17 @@ export default function AdminOrders() {
   const [search,   setSearch]   = useState('');
   const [expanded, setExpanded] = useState(null);
   const LIMIT = 20;
+  const [orderItems, setOrderItems] = useState({}); // cache: { orderId: items[] }
+
+  const fetchOrderItems = async (orderId) => {
+    if (orderItems[orderId]) return; // already loaded
+    try {
+      const { data } = await API.get(`/admin/orders/${orderId}/items`);
+      setOrderItems(prev => ({ ...prev, [orderId]: data }));
+    } catch {
+      setOrderItems(prev => ({ ...prev, [orderId]: [] }));
+    }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -133,6 +144,7 @@ export default function AdminOrders() {
               <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase">Order</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Customer</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Date</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase hidden lg:table-cell">Items</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Total</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Payment</th>
               <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
@@ -162,7 +174,11 @@ export default function AdminOrders() {
                       ? 'bg-green-50/40 border-l-2 border-l-green-400'
                       : ''
                   }`}
-                  onClick={() => setExpanded(expanded === order.id ? null : order.id)}
+                  onClick={() => {
+                    const newId = expanded === order.id ? null : order.id;
+                    setExpanded(newId);
+                    if (newId) fetchOrderItems(newId);
+                  }}
                 >
                   <td className="px-5 py-3">
                     <p className="font-semibold text-gray-800 text-sm">{order.order_number}</p>
@@ -171,6 +187,19 @@ export default function AdminOrders() {
                   <td className="px-4 py-3 hidden md:table-cell">
                     <p className="text-gray-700 text-sm">{order.customer_name || '—'}</p>
                     <p className="text-xs text-gray-400">{order.customer_email}</p>
+                  </td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    {/* Item summary */}
+                    <div className="max-w-[160px]">
+                      <p className="text-xs font-medium text-gray-700">
+                        {order.item_count || 0} item{order.item_count !== 1 ? 's' : ''}
+                      </p>
+                      {order.item_names && (
+                        <p className="text-xs text-gray-400 truncate mt-0.5" title={order.item_names}>
+                          {order.item_names}
+                        </p>
+                      )}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-gray-500 text-xs hidden sm:table-cell">
                     {new Date(order.created_at).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
@@ -211,6 +240,44 @@ export default function AdminOrders() {
                 {expanded === order.id && (
                   <tr>
                     <td colSpan={7} className="bg-gray-50 px-6 py-5 border-b border-gray-100">
+                      {/* ── Order Items ── */}
+                      {orderItems[order.id] && orderItems[order.id].length > 0 && (
+                        <div className="mb-5">
+                          <p className="text-xs font-bold text-gray-500 uppercase mb-3">Items Ordered ({orderItems[order.id].length})</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            {orderItems[order.id].map((item, i) => (
+                              <div key={i} className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 p-3">
+                                {item.product_image
+                                  ? <img src={item.product_image} alt={item.product_name} className="w-12 h-12 object-cover rounded-lg flex-shrink-0 bg-gray-100" />
+                                  : <div className="w-12 h-12 bg-gray-100 rounded-lg flex-shrink-0 flex items-center justify-center text-xl">📦</div>
+                                }
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs font-semibold text-gray-800 line-clamp-2 leading-tight">{item.product_name}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${item.product_type === 'digital' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'}`}>
+                                      {item.product_type === 'digital' ? '💻 Digital' : '📦 Physical'}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    ₹{Number(item.price).toLocaleString('en-IN')} × {item.quantity}
+                                    <span className="font-semibold text-gray-800 ml-1">= ₹{Number(item.total).toLocaleString('en-IN')}</span>
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {orderItems[order.id] && orderItems[order.id].length === 0 && (
+                        <p className="text-xs text-gray-400 mb-4">No items found</p>
+                      )}
+                      {!orderItems[order.id] && (
+                        <div className="mb-4 flex items-center gap-2 text-xs text-gray-400">
+                          <div className="w-3 h-3 border-2 border-gray-300 border-t-transparent rounded-full animate-spin" />
+                          Loading items...
+                        </div>
+                      )}
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
 
                         {/* Order details */}
